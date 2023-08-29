@@ -1,8 +1,12 @@
 /*
   ==============================================================================
 
+<<<<<<< HEAD
     This file contains the basic startup code for a JUCE application.
 
+=======
+    This file contains the startup code for a PIP.
+>>>>>>> d82ba4f6e96c9d68c71bc59479d1ba3018f42ef0
 
   ==============================================================================
 */

@@ -35,12 +35,25 @@
  #error "This project was last saved using an outdated version of the Projucer! Re-save this project with the latest version to fix this error."
 #endif
 
+<<<<<<< HEAD
+=======
+#if ! DONT_SET_USING_JUCE_NAMESPACE
+ // If your code uses a lot of JUCE classes, then this will obviously save you
+ // a lot of typing, but can be disabled by setting DONT_SET_USING_JUCE_NAMESPACE.
+ using namespace juce;
+#endif
+>>>>>>> d82ba4f6e96c9d68c71bc59479d1ba3018f42ef0
 
 #if ! JUCE_DONT_DECLARE_PROJECTINFO
 namespace ProjectInfo
 {
+<<<<<<< HEAD
     const char* const  projectName    = "MIDISynthesiserTest";
     const char* const  companyName    = "";
+=======
+    const char* const  projectName    = "SynthUsingMidiInputTutorial";
+    const char* const  companyName    = "JUCE";
+>>>>>>> d82ba4f6e96c9d68c71bc59479d1ba3018f42ef0
     const char* const  versionString  = "1.0.0";
     const int          versionNumber  = 0x10000;
 }
