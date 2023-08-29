@@ -3,7 +3,6 @@
 
     This file contains the basic startup code for a JUCE application.
 
-
   ==============================================================================
 */
 

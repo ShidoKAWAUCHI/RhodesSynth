@@ -44,7 +44,6 @@ public:
         auto cyclePerSecond = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber, A3Frequency);
 
         auto cyclePerSample = cyclePerSecond / getSampleRate();
-        
 
         FREQ = cyclePerSecond;
         angleDelta = cyclePerSample * 2.0 * juce::MathConstants<double>::pi;
@@ -69,7 +68,6 @@ public:
     
     void pitchWheelMoved (int) override {}
     void controllerMoved (int, int) override {}
-
 
     void renderNextBlock (juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override //実際に音声データを作成する関数
     {   
@@ -249,7 +247,6 @@ public:
                     
                     auto currentSample = value * level*N;
 
-                        
                     cx = x;
 
                     for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
@@ -418,7 +415,7 @@ public:
         f3 = targetf3;
 
         for (auto i = 0; i < 4; ++i)
-            synth.addVoice(new SineWaveVoice(level, A3Frequency, c, k, x0, f1, f2, f3));
+            synth.addVoice(new SineWaveVoice(level, A3Frequency, c, k, x0, f1, f2, f3));c
     }
 
 private:
@@ -470,6 +467,7 @@ public:
         
         if (midiInputList.getSelectedId() == 0)
             setMidiInput (-21);
+
         addAndMakeVisible(levelSlider);
         levelSlider.setRange(0.0, 0.125f);
         levelSlider.setValue ((double) currentLevel, juce::dontSendNotification);
