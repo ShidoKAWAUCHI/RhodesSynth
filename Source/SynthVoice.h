@@ -20,22 +20,18 @@ public:
     void startNote(int midiNoteNumber, float velocity,
         juce::SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
     void stopNote(float /*velocity*/, bool allowTailOff) override;
-    void pitchWheelMoved(int) override;
+    void pitchWheelMoved(int newPitchWheelValue) override;
     void controllerMoved(int, int) override;
+    void aftertouchChanged(int newAftertouchValue) override;
     void renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override;
-    void test();
 private:
     double currentAngle = 0.0, angleDelta = 0.0, tailOff = 0.0;
     double cx = 0;
     double ss = 0;
     int num = 0;
     double FREQ = 0;
-    //double sample = 48000;
-    double sample;
-    double sample2 = 44000;
-    double PERIOD_SEC=0;
-    //double PERIOD_SEC = 1 / sample;
-    double PERIOD_SEC2 = 1 / sample2;
+    double sample = 48000;
+    double PERIOD_SEC = 1 / sample;
     double V0 = 4000; 
     double c = 0.000050;
     double k = 20;
@@ -63,4 +59,7 @@ private:
     float level = 0.1f, currentLevel = 0.1f;
     double A3Frequency = 440.0;
 
+    double BASE_FREQ = 0;
+    double previousPitchWheelValue = 0.0;
+    double pitchShift = 1.0;
 };

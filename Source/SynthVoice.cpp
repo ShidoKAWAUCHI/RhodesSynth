@@ -24,11 +24,8 @@ void RhodesWaveVoice::startNote(int midiNoteNumber, float velocity,
     auto cyclePerSample = cyclePerSecond / getSampleRate();
 
     FREQ = cyclePerSecond;
+    BASE_FREQ = cyclePerSecond;
     angleDelta = cyclePerSample * 2.0 * juce::MathConstants<double>::pi;
-}
-void RhodesWaveVoice::test() {
-    sample = 48000;
-
 }
 
 void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
@@ -48,8 +45,22 @@ void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
     }
 }
 
-void RhodesWaveVoice::pitchWheelMoved(int) {}
+void RhodesWaveVoice::pitchWheelMoved(int newPitchWheelValue) {
+    double wheelPos = ((float)newPitchWheelValue - 8192.0f) / 8192.0f; // ƒsƒbƒ`ƒzƒC[ƒ‹‚Ì’l‚ð-1.0‚©‚ç1.0‚Ì”ÍˆÍ‚É³‹K‰»
+    double semitones = wheelPos * 2.0; // ”ÍˆÍ‚ð2”¼‰¹i‘S‰¹j•ª‚É‚·‚é
+    pitchShift = std::pow(2.0, semitones / 12.0); // ”{‰¹”ä‚É•ÏŠ·‚µ‚Äƒsƒbƒ`ƒVƒtƒg—Ê‚ðŒvŽZ
+    FREQ = BASE_FREQ * pitchShift;
+}
 void RhodesWaveVoice::controllerMoved(int, int) {}
+
+void RhodesWaveVoice::aftertouchChanged(int newAftertouchValue)
+{
+    float aftertoutchPos = static_cast<float>(newAftertouchValue) / 127.0f; // ƒAƒtƒ^[ƒ^ƒbƒ`‚Ì’l‚ð-1.0‚©‚ç1.0‚Ì”ÍˆÍ‚É³‹K‰»
+    double semitones = aftertoutchPos * 2.0; // ”ÍˆÍ‚ð2”¼‰¹i‘S‰¹j•ª‚É‚·‚é
+    pitchShift = std::pow(2.0, semitones / 12.0); // ”{‰¹”ä‚É•ÏŠ·‚µ‚Äƒsƒbƒ`ƒVƒtƒg—Ê‚ðŒvŽZ
+    FREQ = BASE_FREQ * pitchShift; //ƒsƒbƒ`ƒVƒtƒg‚ðŽü”g”‚É“K—p
+
+}
 
 void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples)
 {

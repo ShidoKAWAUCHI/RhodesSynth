@@ -13,15 +13,8 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
     : AudioProcessorEditor(&p), processor(p)
     , keyboardComponent(p.getMidiKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard)
 {
-    AButton.setButtonText("TestA");
-    AButton.addListener(this);
-    BButton.setButtonText("TestB");
-    BButton.addListener(this);
-
-    addAndMakeVisible(AButton);
-    addAndMakeVisible(BButton);
     addAndMakeVisible(keyboardComponent);
-    setSize(800, 600);
+    setSize(400, 300);
 }
 
 
@@ -29,24 +22,14 @@ RhodesPluginSynthAudioProcessorEditor::~RhodesPluginSynthAudioProcessorEditor()
 {
 }
 
+//==============================================================================
 void RhodesPluginSynthAudioProcessorEditor::paint(juce::Graphics& g)
 {
+    // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 
 void RhodesPluginSynthAudioProcessorEditor::resized()
 {
-    AButton.setBoundsRelative(0.2, 0.2, 0.2, 0.2);
-    BButton.setBoundsRelative(0.6, 0.2, 0.2, 0.2);
-    keyboardComponent.setBoundsRelative(0, 0.7, 1.0, 0.3);
-}
-
-void RhodesPluginSynthAudioProcessorEditor::buttonClicked(juce::Button* button)
-{
-    if (button == &AButton) {
-        f = 0;
-    }
-    else if (button == &BButton) {
-        f = 1;
-    }
+    keyboardComponent.setBoundsRelative(0, 0, 1.0, 1.0);
 }
