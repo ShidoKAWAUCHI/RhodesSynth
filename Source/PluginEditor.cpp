@@ -14,7 +14,7 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
     , keyboardComponent(p.getMidiKeyboardState(), juce::MidiKeyboardComponent::horizontalKeyboard)
 {
     addAndMakeVisible(keyboardComponent);
-    setSize(400, 300);
+    setSize(600, 300);
 }
 
 

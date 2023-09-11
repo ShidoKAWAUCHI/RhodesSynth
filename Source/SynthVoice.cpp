@@ -70,10 +70,8 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
         {
             while (--numSamples >= 0)
             {
-                    //sample = 48000;
-                    PERIOD_SEC = 1 / sample;
                 time = ss * PERIOD_SEC;
-                if (time < (1 / (FREQ * 4)))
+                if (time < (1 / (BASE_FREQ * 4)))
                 {
                     theta = 4 * 3.14159265358979323846 * FREQ * time; 
                     damp = expl((-0.6 * time));
@@ -82,10 +80,10 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
                 }
                 else
                 {
-                    theta = 2 * 3.14159265358979323846 * FREQ * time; 
+                    theta = 2 * 3.14159265358979323846 * BASE_FREQ * time; 
                     damp = expl(-0.6 * time);
 
-                    if (3 / (FREQ * 4) < time)
+                    if (3 / (BASE_FREQ * 4) < time)
                     {
                         x_t = x0 + damp * Amin * sin(theta);
                         x = x_t;
@@ -166,21 +164,16 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 
                 time = ss * PERIOD_SEC;
 
-                if (time < (1 / (FREQ * 4)))
+                if (time < (1 / (BASE_FREQ * 4)))
                 {
                     theta = 4 * 3.14159265358979323846 * FREQ * time; 
                     damp = expl((-0.6 * time)); 
                     x_t = x0 + damp * 0.5 * AMax * (1 - cos(theta));
                     x = x_t;
-
-
-                }
-                else 
-                {
-                    theta = 2 * 3.14159265358979323846 * FREQ * time; 
+                    FREQ * time; 
                     damp = expl(-0.6 * time);
 
-                    if (3 / (FREQ * 4) < time)
+                    if (3 / (BASE_FREQ * 4) < time)
                     {
                         x_t = x0 + damp * Amin * sin(theta); 
                         x = x_t;
@@ -229,11 +222,11 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
                 s = 0.0;
                 double f[] = { f1, f2 };
                 double a[] = { a1,a2 };
-                double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2))) * (pow((FREQ - f[1]), 2)) + a[1];
+               double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2))) * (pow((BASE_FREQ - f[1]), 2)) + a[1];
                 value = (-2 * (x / k) * c * exp(-((pow(x, 2)) / k))) * v; 
 
                 auto currentSample = value * level * A;
-
+                //auto currentSample = value * level ;
                 cx = x;
 
                 for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
