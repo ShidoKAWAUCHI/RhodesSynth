@@ -64,18 +64,20 @@ void RhodesWaveVoice::aftertouchChanged(int newAftertouchValue)
 
 double RhodesWaveVoice::renderNextSample()
 {
+    double theta = 0;
+    double damp = 0;
+
     time = ss * PERIOD_SEC;
+    theta = 2 * 3.14159265358979323846 * FREQ * time;
+    damp = expl((-0.6 * time));
     if (time < (1 / (BASE_FREQ * 4)))
     {
-        theta = 4 * 3.14159265358979323846 * FREQ * time;
-        damp = expl((-0.6 * time));
+        theta *= 2;
         x_t = x0 + damp * 0.5 * AMax * (1 - cos(theta));
         x = x_t;
     }
     else
     {
-        theta = 2 * 3.14159265358979323846 * FREQ * time;
-        damp = expl(-0.6 * time);
 
         if (3 / (BASE_FREQ * 4) < time)
         {

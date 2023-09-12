@@ -53,8 +53,7 @@ private:
 
     double AMax = 0.0019 * V0 + 0.0008;
     double Amin = abs(-0.0019 * V0 + 0.0047);
-    double time = 0, maxX = 0, theta = 0, x_t = 0;
-    double damp = 0;
+    double time = 0, maxX = 0, x_t = 0;
     double x = 0;
 
     float level = 0.1f, currentLevel = 0.1f;
