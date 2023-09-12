@@ -24,6 +24,7 @@ public:
     void controllerMoved(int, int) override;
     void aftertouchChanged(int newAftertouchValue) override;
     void renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override;
+    double renderNextSample();
 private:
     double currentAngle = 0.0, angleDelta = 0.0, tailOff = 0.0;
     double cx = 0;
