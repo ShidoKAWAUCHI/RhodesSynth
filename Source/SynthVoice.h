@@ -24,7 +24,7 @@ public:
     void controllerMoved(int, int) override;
     void aftertouchChanged(int newAftertouchValue) override;
     void renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override;
-    double renderNextSample();
+  
 private:
     double currentAngle = 0.0, angleDelta = 0.0, tailOff = 0.0;
     double cx = 0;
@@ -53,8 +53,9 @@ private:
 
     double AMax = 0.0019 * V0 + 0.0008;
     double Amin = abs(-0.0019 * V0 + 0.0047);
-    double time = 0, maxX = 0, x_t = 0;
+    double  maxX = 0, x_t = 0;
     double x = 0;
+    double theta = 0;
 
     float level = 0.1f, currentLevel = 0.1f;
     double A3Frequency = 440.0;
@@ -62,4 +63,6 @@ private:
     double BASE_FREQ = 0;
     double previousPitchWheelValue = 0.0;
     double pitchShift = 1.0;
+
+    double renderNextSample();
 };
