@@ -46,20 +46,20 @@ void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
 }
 
 void RhodesWaveVoice::pitchWheelMoved(int newPitchWheelValue) {
-    double wheelPos = ((float)newPitchWheelValue - 8192.0f) / 8192.0f; // ƒsƒbƒ`ƒzƒC[ƒ‹‚Ì’l‚ð-1.0‚©‚ç1.0‚Ì”ÍˆÍ‚É³‹K‰»
-    double semitones = wheelPos * 2.0; // ”ÍˆÍ‚ð2”¼‰¹i‘S‰¹j•ª‚É‚·‚é
-    pitchShift = std::pow(2.0, semitones / 12.0); // ”{‰¹”ä‚É•ÏŠ·‚µ‚Äƒsƒbƒ`ƒVƒtƒg—Ê‚ðŒvŽZ
+    double wheelPos = ((float)newPitchWheelValue - 8192.0f) / 8192.0f; 
+    double semitones = wheelPos * 2.0; 
+    pitchShift = std::pow(2.0, semitones / 12.0);
     FREQ = BASE_FREQ * pitchShift;
 }
 void RhodesWaveVoice::controllerMoved(int, int) {}
 
 void RhodesWaveVoice::aftertouchChanged(int newAftertouchValue)
 {
-    float aftertoutchPos = static_cast<float>(newAftertouchValue) / 127.0f; // ƒAƒtƒ^[ƒ^ƒbƒ`‚Ì’l‚ð-1.0‚©‚ç1.0‚Ì”ÍˆÍ‚É³‹K‰»
-    double semitones = aftertoutchPos * 2.0; // ”ÍˆÍ‚ð2”¼‰¹i‘S‰¹j•ª‚É‚·‚é
-    pitchShift = std::pow(2.0, semitones / 12.0); // ”{‰¹”ä‚É•ÏŠ·‚µ‚Äƒsƒbƒ`ƒVƒtƒg—Ê‚ðŒvŽZ
-    FREQ = BASE_FREQ * pitchShift; //ƒsƒbƒ`ƒVƒtƒg‚ðŽü”g”‚É“K—p
-
+   /* float aftertoutchPos = static_cast<float>(newAftertouchValue) / 127.0f; 
+    double semitones = aftertoutchPos * 2.0; 
+    pitchShift = std::pow(2.0, semitones / 12.0); 
+    FREQ = BASE_FREQ * pitchShift; 
+    */
 }
 
 void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples)
@@ -70,17 +70,19 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
         {
             while (--numSamples >= 0)
             {
+                //sample = 48000;
+                PERIOD_SEC = 1 / sample;
                 time = ss * PERIOD_SEC;
                 if (time < (1 / (BASE_FREQ * 4)))
                 {
-                    theta = 4 * 3.14159265358979323846 * FREQ * time; 
+                    theta = 4 * 3.14159265358979323846 * FREQ * time;
                     damp = expl((-0.6 * time));
                     x_t = x0 + damp * 0.5 * AMax * (1 - cos(theta));
                     x = x_t;
                 }
                 else
                 {
-                    theta = 2 * 3.14159265358979323846 * BASE_FREQ * time; 
+                    theta = 2 * 3.14159265358979323846 * FREQ * time;
                     damp = expl(-0.6 * time);
 
                     if (3 / (BASE_FREQ * 4) < time)
@@ -121,22 +123,42 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
                 }
                 /*value = (-1 * (sign * (A6 * pow(x, 6) + A5 * (abs(pow(x, 5))) + A4 * pow(x, 4)
                     + A3 * (abs(pow(x, 3))) + A2 * pow(x, 2) + A1 * (abs(x)))) * v);
-                    value = (-2 * (x / k) * c * exp(-(x * x / k))) * v;*/
+                   */
 
                 double f[] = { f1, f2 };
+
+
                 double a[] = { a1,a2 };
                 double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2))) * (pow((FREQ - f[1]), 2)) + a[1];
 
                 value = (-2 * (x / k) * c * exp(-((pow(x, 2)) / k))) * v;
 
-                auto currentSample = value * level * A * tailOff;
-                //auto currentSample = value * level *  tailOff;
+                //auto currentSample = value * level * A * tailOff;
+                auto currentSample = value * A *  tailOff*0.1;
                 printf("%f\n", value);
+
+                ABScurrentSample = abs(currentSample);
+                if (((time > 0) && (time <= (1 / (BASE_FREQ * 4))))) {
+                    if (attackMaxSample < ABScurrentSample) {
+                        attackMaxSample = ABScurrentSample;
+                    }
+                }
+
+
+                if (ABScurrentSample > attackMaxSample) {//超えた場合
+                    //音を止め、値の初期化
+                    clearCurrentNote();
+                    angleDelta = 0.0;
+                    ss = 0;
+                    cx = 0;
+                    attackMaxSample = 0.0;
+                }
 
                 cx = x;
 
                 for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
                     outputBuffer.addSample(i, startSample, currentSample);
+
 
                 ss += 1;
 
@@ -146,15 +168,16 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 
                 tailOff *= 0.99;
 
-                if (tailOff <= 0.005)
+               /* if (tailOff <= 0.005)
                 {
                     clearCurrentNote();
 
                     angleDelta = 0.0;
                     ss = 0;
                     cx = 0;
+                    attackMaxSample = 0.0;
                     break;
-                }
+                }*/
             }
         }
         else
@@ -166,21 +189,26 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 
                 if (time < (1 / (BASE_FREQ * 4)))
                 {
-                    theta = 4 * 3.14159265358979323846 * FREQ * time; 
-                    damp = expl((-0.6 * time)); 
+                    theta = 4 * 3.14159265358979323846 * FREQ * time;
+                    damp = expl((-0.6 * time));
                     x_t = x0 + damp * 0.5 * AMax * (1 - cos(theta));
                     x = x_t;
-                    FREQ * time; 
+
+
+                }
+                else
+                {
+                    theta = 2 * 3.14159265358979323846 * FREQ * time;
                     damp = expl(-0.6 * time);
 
                     if (3 / (BASE_FREQ * 4) < time)
                     {
-                        x_t = x0 + damp * Amin * sin(theta); 
+                        x_t = x0 + damp * Amin * sin(theta);
                         x = x_t;
                     }
                     else
                     {
-                        x_t = x0 + damp * ((AMax - Amin) * 0.5 + (AMax + Amin) * 0.5 * sin(theta)); 
+                        x_t = x0 + damp * ((AMax - Amin) * 0.5 + (AMax + Amin) * 0.5 * sin(theta));
                         x = x_t;
                     }
                 }
@@ -195,7 +223,7 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
                 }
                 else
                 {
-                    v = ((x - cx) / PERIOD_SEC);
+                    v = ((x - cx) / PERIOD_SEC); //
                     if (x > 0)
                     {
                         sign = 1;
@@ -210,8 +238,8 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
                     }
                 }
 
-               /* value = (-1 * (sign * (A6 * pow(x, 6) + A5 * (abs(pow(x, 5))) + A4 * pow(x, 4)
-                    + A3 * (abs(pow(x, 3))) + A2 * pow(x, 2) + A1 * (abs(x)))) * v);*/
+                /* value = (-1 * (sign * (A6 * pow(x, 6) + A5 * (abs(pow(x, 5))) + A4 * pow(x, 4)
+                     + A3 * (abs(pow(x, 3))) + A2 * pow(x, 2) + A1 * (abs(x)))) * v);*/
                 printf("value");
 
                 int n;
@@ -222,20 +250,39 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
                 s = 0.0;
                 double f[] = { f1, f2 };
                 double a[] = { a1,a2 };
-               double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2))) * (pow((BASE_FREQ - f[1]), 2)) + a[1];
-                value = (-2 * (x / k) * c * exp(-((pow(x, 2)) / k))) * v; 
+                double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2))) * (pow((FREQ - f[1]), 2)) + a[1];
+                value = (-2 * (x / k) * c * exp(-((pow(x, 2)) / k))) * v;
 
-                auto currentSample = value * level * A;
-                //auto currentSample = value * level ;
+                //ノイズの観測時にベロシティは不要になるため抜いておく
+                //auto currentSample = value * level * A;
+                auto currentSample = value *  A*0.1;
+
+                ABScurrentSample = abs(currentSample); //絶対値に変換
+                if (((time > 0) && (time <= (1 / (BASE_FREQ * 4))))) { //振幅が最大値になるまで
+                    if (attackMaxSample < ABScurrentSample) { //値が大きかった場合は更新
+                        attackMaxSample = ABScurrentSample;
+                    }
+                }
+
+
+                if (ABScurrentSample > attackMaxSample) {//超えた場合
+                    //音を止め、値の初期化
+                    clearCurrentNote();
+                    angleDelta = 0.0;
+                    ss = 0;
+                    cx = 0;
+                    attackMaxSample = 0.0;
+                    
+                }
+
                 cx = x;
 
                 for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-                    outputBuffer.addSample(i, startSample, currentSample); 
-                ss += 1; 
+                    outputBuffer.addSample(i, startSample, currentSample);
+                ss += 1;
                 currentAngle += angleDelta;
                 ++startSample;
             }
         }
     }
 }
-

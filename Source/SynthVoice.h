@@ -62,4 +62,7 @@ private:
     double BASE_FREQ = 0;
     double previousPitchWheelValue = 0.0;
     double pitchShift = 1.0;
+
+    double attackMaxSample = 0.0;
+    double ABScurrentSample = 0.0;
 };
