@@ -12,6 +12,34 @@
 
 double constexpr RhodesWaveVoice::A3Frequency;
 
+RhodesWaveVoice::RhodesWaveVoice() :
+	juce::SynthesiserVoice(),
+	tailOff(0.0),
+	cx(0),
+	ss(0),
+	freq(0),
+	base_freq(0),
+	period_sec(0),
+	c(0.000050),
+	k(20),
+	f1(8),
+	f2(4186),
+	a1(10),
+	a2(0.01),
+	x0(3),
+	A1(-6.49268 * pow(10, -2)),
+	A2(-4.15615 * pow(10, -2)),
+	A3(1.65023 * pow(10, -2)),
+	A4(-1.84747 * pow(10, -3)),
+	A5(6.74355 * pow(10, -5)),
+	A6(0),
+	theta(0),
+	damp(1),
+	level(0.1)
+{
+
+}
+
 bool RhodesWaveVoice::canPlaySound(juce::SynthesiserSound* sound)
 {
 	return dynamic_cast<RhodesWaveSound*> (sound) != nullptr;
@@ -20,7 +48,7 @@ bool RhodesWaveVoice::canPlaySound(juce::SynthesiserSound* sound)
 void RhodesWaveVoice::startNote(int midiNoteNumber, float velocity,
 	juce::SynthesiserSound*, int /*currentPitchWheelPosition*/)
 {
-	level = velocity * 0.1f;
+	level = velocity * 0.1;
 	tailOff = 1.0;
 
 	auto cyclePerSecond = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber, A3Frequency);
@@ -28,8 +56,8 @@ void RhodesWaveVoice::startNote(int midiNoteNumber, float velocity,
 
 	freq = cyclePerSecond;
 	base_freq = cyclePerSecond;
-	angleDelta = cyclePerSample * 2.0 * juce::MathConstants<double>::pi;
 	theta = 0.0;
+	damp = 1.0;
 }
 
 void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
@@ -37,7 +65,7 @@ void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
 	if (allowTailOff)
 	{
 		if (tailOff == 1.0)
-				tailOff *= 0.99;
+			tailOff *= 0.99;
 	}
 	else
 	{
@@ -55,8 +83,8 @@ void RhodesWaveVoice::controllerMoved(int, int) {}
 
 void RhodesWaveVoice::aftertouchChanged(int newAftertouchValue)
 {
-	/*float aftertoutchPos = static_cast<float>(newAftertouchValue) / 127.0f;
-	pitchShiftPos(aftertoutchPos);*/
+	float aftertoutchPos = static_cast<float>(newAftertouchValue) / 127.0f;
+	pitchShiftPos(aftertoutchPos);
 }
 
 void RhodesWaveVoice::pitchShiftPos(double pos)
@@ -76,35 +104,34 @@ void RhodesWaveVoice::setCurrentPlaybackSampleRate(double 	newRate)
 void RhodesWaveVoice::clearNote()
 {
 	clearCurrentNote();
-	angleDelta = 0.0;
 	ss = 0;
-	cx = 0;
+	cx = 0.0;
+	tailOff = 0.0;
 }
 
 double RhodesWaveVoice::renderNextSample()
 {
-	double  damp = 0, time = 0, x = 0;
+	double x = 0;
 	double V0 = 4000;
 	double AMax = 0.0019 * V0 + 0.0008;
 	double Amin = abs(-0.0019 * V0 + 0.0047);
 	double maxX = 0;
 
-	time = ss * period_sec;
 	theta += 2 * juce::MathConstants<double>::pi * freq * period_sec;
+	damp *= expl((-0.6 * period_sec));
 
-	//time‚Ætheta‚Ì“ª‚ð‘µ‚¦‚é
-	if (time == 0)
+	if (ss == 0)
 	{
 		theta = 0;
+		damp = 1;
 	}
 
-	damp = expl((-0.6 * time));
 
-	if (time < (1 / (base_freq * 4)))
+	if (ss < (getSampleRate() / (base_freq * 4)))
 	{
 		x = x0 + damp * 0.5 * AMax * (1 - cos(theta * 2));
 	}
-	else if (time < 3 / (base_freq * 4))
+	else if (ss < 3 *getSampleRate()/ (base_freq * 4))
 	{
 		x = x0 + damp * ((AMax - Amin) * 0.5 + (AMax + Amin) * 0.5 * sin(theta));
 	}
@@ -117,13 +144,13 @@ double RhodesWaveVoice::renderNextSample()
 	double value = 0;
 	double sign = 0;
 
-	if (time == 0)
+	if (ss == 0)
 	{
 		v = 0;
 	}
 	else
 	{
-		v = ((x - cx) / period_sec);
+		v = ((x - cx) * getSampleRate());
 		if (x > 0)
 		{
 			sign = 1;
@@ -148,7 +175,7 @@ double RhodesWaveVoice::renderNextSample()
 	double a[] = { a1,a2 };
 	double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2))) * (pow((freq - f[1]), 2)) + a[1];
 
-	value = ((-2 * (x / k) * c * exp(-((pow(x, 2)) / k))) * v) * A * 0.01;
+	value = ((-2 * (x / k) * c * exp(-((x*x) / k))) * v) * A * level;
 
 	ss += 1;
 
@@ -157,7 +184,7 @@ double RhodesWaveVoice::renderNextSample()
 
 void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples)
 {
-	if (tailOff == 1.0)
+	if (tailOff > 0.0)
 	{
 		while (--numSamples >= 0)
 		{
@@ -167,11 +194,14 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 				outputBuffer.addSample(i, startSample, currentSample);
 
 			++startSample;
-
-			if (tailOff <= 0.005)
+			if(tailOff<1.0)
 			{
-				clearNote();
-				break;
+				tailOff *= 0.99;
+				if (tailOff <= 0.005)
+				{
+					clearNote();
+					break;
+				}
 			}
 		}
 	}
