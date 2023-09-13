@@ -21,7 +21,7 @@ void RhodesWaveVoice::startNote(int midiNoteNumber, float velocity,
 	juce::SynthesiserSound*, int /*currentPitchWheelPosition*/)
 {
 	level = velocity * 0.1f;
-	tailOff = 0.0;
+	tailOff = 1.0;
 
 	auto cyclePerSecond = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber, A3Frequency);
 	auto cyclePerSample = cyclePerSecond / getSampleRate();
@@ -36,8 +36,8 @@ void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
 {
 	if (allowTailOff)
 	{
-		if (tailOff == 0.0)
-			tailOff = 1.0;
+		if (tailOff == 1.0)
+				tailOff *= 0.99;
 	}
 	else
 	{
@@ -50,12 +50,13 @@ void RhodesWaveVoice::pitchWheelMoved(int newPitchWheelValue)
 	double wheelPos = ((float)newPitchWheelValue - 8192.0f) / 8192.0f;
 	pitchShiftPos(wheelPos);
 }
+
 void RhodesWaveVoice::controllerMoved(int, int) {}
 
 void RhodesWaveVoice::aftertouchChanged(int newAftertouchValue)
 {
-	float aftertoutchPos = static_cast<float>(newAftertouchValue) / 127.0f;
-	pitchShiftPos(aftertoutchPos);
+	/*float aftertoutchPos = static_cast<float>(newAftertouchValue) / 127.0f;
+	pitchShiftPos(aftertoutchPos);*/
 }
 
 void RhodesWaveVoice::pitchShiftPos(double pos)
@@ -147,7 +148,7 @@ double RhodesWaveVoice::renderNextSample()
 	double a[] = { a1,a2 };
 	double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2))) * (pow((freq - f[1]), 2)) + a[1];
 
-	value = ((-2 * (x / k) * c * exp(-((pow(x, 2)) / k))) * v) * A * level;
+	value = ((-2 * (x / k) * c * exp(-((pow(x, 2)) / k))) * v) * A * 0.01;
 
 	ss += 1;
 
@@ -156,38 +157,21 @@ double RhodesWaveVoice::renderNextSample()
 
 void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples)
 {
-	if (angleDelta != 0.0)
+	if (tailOff == 1.0)
 	{
-		if (tailOff > 0.0)
+		while (--numSamples >= 0)
 		{
-			while (--numSamples >= 0)
+			auto currentSample = renderNextSample() * tailOff;
+
+			for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
+				outputBuffer.addSample(i, startSample, currentSample);
+
+			++startSample;
+
+			if (tailOff <= 0.005)
 			{
-				auto currentSample = renderNextSample() * tailOff;
-
-				for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-					outputBuffer.addSample(i, startSample, currentSample);
-
-				++startSample;
-
-				tailOff *= 0.99;
-
-				if (tailOff <= 0.005)
-				{
-					clearNote();
-					break;
-				}
-			}
-		}
-		else
-		{
-			while (--numSamples >= 0)
-			{
-				auto currentSample = renderNextSample();
-
-				for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
-					outputBuffer.addSample(i, startSample, currentSample);
-
-				++startSample;
+				clearNote();
+				break;
 			}
 		}
 	}
