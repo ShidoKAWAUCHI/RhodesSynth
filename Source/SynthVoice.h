@@ -24,16 +24,14 @@ public:
     void controllerMoved(int, int) override;
     void aftertouchChanged(int newAftertouchValue) override;
     void renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override;
-    void setCurrentPlaybackSampleRate(double 	newRate) override;
-
 private:
-    static double constexpr A3Frequency = 440.0;
-
-    double angleDelta = 0.0, tailOff = 0.0;
+    double currentAngle = 0.0, angleDelta = 0.0, tailOff = 0.0;
     double cx = 0;
     double ss = 0;
-    double freq = 0;
-    double period_sec = 0;
+    int num = 0;
+    double FREQ = 0;
+    double PERIOD_SEC = 0;
+    double V0 = 4000;
     double c = 0.000050;
     double k = 20;
 
@@ -47,19 +45,22 @@ private:
     double A1 = -6.49268 * pow(10, -2);
     double A2 = -4.15615 * pow(10, -2);
     double A3 = 1.65023 * pow(10, -2);
-    double A4 = -1.84747 * pow(10, -3); 
+    double A4 = -1.84747 * pow(10, -3);
     double A5 = 6.74355 * pow(10, -5);
     double A6 = 0;
 
-    
+    double AMax = 0.0019 * V0 + 0.0008;
+    double Amin = abs(-0.0019 * V0 + 0.0047);
+    double time = 0, maxX = 0, theta = 0, x_t = 0;
+    double damp = 0;
+    double x = 0;
 
-    double theta = 0;
+    float level = 0.1f, currentLevel = 0.1f;
+    double A3Frequency = 440.0;
 
-    float level = 0.1f;
+    double BASE_FREQ = 0;
+    double previousPitchWheelValue = 0.0;
+    double pitchShift = 1.0;
 
-    double base_freq = 0;
-
-    void pitchShiftPos(double pos);
-    void clearNote();
-    double renderNextSample();
+    void setCurrentPlaybackSampleRate(double newRate);
 };

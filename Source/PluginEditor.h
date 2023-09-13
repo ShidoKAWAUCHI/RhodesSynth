@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin editor.
+	This file contains the basic framework code for a JUCE plugin editor.
 
   ==============================================================================
 */
@@ -14,18 +14,18 @@
 class RhodesPluginSynthAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
-    RhodesPluginSynthAudioProcessorEditor(RhodesPluginSynthAudioProcessor&);
-    ~RhodesPluginSynthAudioProcessorEditor() override;
+	RhodesPluginSynthAudioProcessorEditor(RhodesPluginSynthAudioProcessor&);
+	~RhodesPluginSynthAudioProcessorEditor() override;
 
-    //==============================================================================
-    void paint(juce::Graphics&) override;
-    void resized() override;
+	//==============================================================================
+	void paint(juce::Graphics&) override;
+	void resized() override;
 
 private:
 
-    juce::MidiKeyboardComponent keyboardComponent;
+	juce::MidiKeyboardComponent keyboardComponent;
 
-    RhodesPluginSynthAudioProcessor& processor;
+	RhodesPluginSynthAudioProcessor& processor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RhodesPluginSynthAudioProcessorEditor)
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RhodesPluginSynthAudioProcessorEditor)
 };
