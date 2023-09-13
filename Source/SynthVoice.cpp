@@ -63,13 +63,30 @@ void RhodesWaveVoice::aftertouchChanged(int newAftertouchValue)
     FREQ = BASE_FREQ * pitchShift;
 }
 
+void RhodesWaveVoice::setCurrentPlaybackSampleRate(double 	newRate)
+{
+    double sampleRate = newRate;
+    period_sec = 1 / sampleRate;
+}
+
 double RhodesWaveVoice::renderNextSample()
 {
     double  damp = 0, time = 0;
+    double V0 = 4000;
+    double AMax = 0.0019 * V0 + 0.0008;
+    double Amin = abs(-0.0019 * V0 + 0.0047);
+    double  maxX = 0, x_t = 0;
 
-    time = ss * PERIOD_SEC;
-    //theta = 2 * 3.14159265358979323846 * FREQ * time;
-    theta += 2 * 3.14159265358979323846 * FREQ *PERIOD_SEC;
+
+    time = ss * period_sec;
+    theta += 2 * 3.14159265358979323846 * FREQ *period_sec;
+
+    //time‚Ætheta‚Ì“ª‚ð‘µ‚¦‚é
+    if(time==0)
+    {
+        theta = 0;
+    }
+
     damp = expl((-0.6 * time));
     if (time < (1 / (BASE_FREQ * 4)))
     {
@@ -101,7 +118,7 @@ double RhodesWaveVoice::renderNextSample()
     }
     else
     {
-        v = ((x - cx) / PERIOD_SEC);
+        v = ((x - cx) / period_sec);
         if (x > 0)
         {
             sign = 1;

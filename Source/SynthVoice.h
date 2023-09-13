@@ -24,16 +24,15 @@ public:
     void controllerMoved(int, int) override;
     void aftertouchChanged(int newAftertouchValue) override;
     void renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override;
-  
+    void setCurrentPlaybackSampleRate(double 	newRate) override;
+
 private:
     double currentAngle = 0.0, angleDelta = 0.0, tailOff = 0.0;
     double cx = 0;
     double ss = 0;
-    int num = 0;
     double FREQ = 0;
-    double sample = 48000;
-    double PERIOD_SEC = 1 / sample;
-    double V0 = 4000; 
+    //double sampleRate = 48000;
+    double period_sec = 0;
     double c = 0.000050;
     double k = 20;
 
@@ -51,9 +50,7 @@ private:
     double A5 = 6.74355 * pow(10, -5);
     double A6 = 0;
 
-    double AMax = 0.0019 * V0 + 0.0008;
-    double Amin = abs(-0.0019 * V0 + 0.0047);
-    double  maxX = 0, x_t = 0;
+    
     double x = 0;
     double theta = 0;
 
