@@ -27,11 +27,12 @@ public:
     void setCurrentPlaybackSampleRate(double 	newRate) override;
 
 private:
-    double currentAngle = 0.0, angleDelta = 0.0, tailOff = 0.0;
+    static double constexpr A3Frequency = 440.0;
+
+    double angleDelta = 0.0, tailOff = 0.0;
     double cx = 0;
     double ss = 0;
-    double FREQ = 0;
-    //double sampleRate = 48000;
+    double freq = 0;
     double period_sec = 0;
     double c = 0.000050;
     double k = 20;
@@ -51,15 +52,14 @@ private:
     double A6 = 0;
 
     
-    double x = 0;
+
     double theta = 0;
 
-    float level = 0.1f, currentLevel = 0.1f;
-    double A3Frequency = 440.0;
+    float level = 0.1f;
 
-    double BASE_FREQ = 0;
-    double previousPitchWheelValue = 0.0;
-    double pitchShift = 1.0;
+    double base_freq = 0;
 
+    void pitchShiftPos(double pos);
+    void clearNote();
     double renderNextSample();
 };

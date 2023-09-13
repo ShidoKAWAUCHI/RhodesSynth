@@ -46,14 +46,6 @@ public:
 private:
     juce::Synthesiser synth;
     juce::MidiKeyboardState keyboardState;
-    bool isChanging;
-    float  level = 0.8f;
-    double A3Frequency = 440.0;
-    double c = 0.000050;
-    double k = 20.0;
-    double x0 = 3.0;
-    double a1 = 10.0;
-    double a2 = 0.01;
  
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RhodesPluginSynthAudioProcessor)
 };
