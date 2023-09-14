@@ -14,7 +14,7 @@
 class RhodesWaveVoice : public juce::SynthesiserVoice
 {
 public:
-    RhodesWaveVoice() ;
+    RhodesWaveVoice(double targetLevel,double targetA3Freqency, double targetc, double targetk, double targetx0, double targeta1, double targeta2) ;
     ~RhodesWaveVoice() override {}
 
     bool canPlaySound(juce::SynthesiserSound* sound) override;
@@ -28,8 +28,8 @@ public:
     void setCurrentPlaybackSampleRate(double 	newRate) override;
 
 private:
-    static double constexpr A3Frequency = 440.0;
 
+    double A3Frequency;
     double tailOff;
     double cx;
     double ss;
@@ -56,9 +56,10 @@ private:
     double theta;
     double damp;
 
-    double level;
+    double level,currentLevel;
     double attack;
     double decay;
+
 
     void pitchShiftPos(double pos);
     void clearNote();

@@ -12,22 +12,21 @@
 
 
 RhodesPluginSynthAudioProcessor::RhodesPluginSynthAudioProcessor()
+
 #ifndef JucePlugin_PreferredChannelConfigurations
     : AudioProcessor(BusesProperties()
 #if ! JucePlugin_IsMidiEffect
 #if ! JucePlugin_IsSynth
         .withInput("Input", juce::AudioChannelSet::stereo(), true)
 #endif
-
         .withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
     )
 #endif
 {
     for (auto i = 0; i < 128; ++i)
-        synth.addVoice(new RhodesWaveVoice());
-
-    synth.addSound(new RhodesWaveSound());
+        synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+      synth.addSound(new RhodesWaveSound());
 }
 
 RhodesPluginSynthAudioProcessor::~RhodesPluginSynthAudioProcessor()
@@ -100,10 +99,78 @@ void RhodesPluginSynthAudioProcessor::prepareToPlay(double sampleRate, int sampl
     keyboardState.reset();
 }
 
+void RhodesPluginSynthAudioProcessor::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
+{
+    bufferToFill.clearActiveBufferRegion();
+    juce::MidiBuffer incomingMidi;
+    midiCollector.removeNextBlockOfMessages(incomingMidi, bufferToFill.numSamples);
+    keyboardState.processNextMidiBuffer(incomingMidi, bufferToFill.startSample, bufferToFill.numSamples, true);
+    synth.renderNextBlock(*bufferToFill.buffer, incomingMidi, bufferToFill.startSample, bufferToFill.numSamples);
+}
+
 void RhodesPluginSynthAudioProcessor::releaseResources()
 {
     keyboardState.allNotesOff(0);
     keyboardState.reset();
+}
+
+void RhodesPluginSynthAudioProcessor::changeLevel(float targetLevel)
+{
+	synth.clearVoices();
+
+	level = targetLevel;
+
+	for (auto i = 0; i < 128; ++i)
+		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+}
+
+void RhodesPluginSynthAudioProcessor::changeA3Frequency(double targetA3Frequency)
+{
+    synth.clearVoices();
+    A3Frequency = targetA3Frequency;
+    for (auto i = 0; i < 128; ++i)
+        synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+}
+
+void RhodesPluginSynthAudioProcessor::changec(float targetc)
+{
+	synth.clearVoices();
+	c = targetc;
+	for (auto i = 0; i < 128; ++i)
+		synth.addVoice(new RhodesWaveVoice(level,A3Frequency,c, k, x0, a1, a2));
+}
+
+void RhodesPluginSynthAudioProcessor::changek(float targetk)
+{
+	synth.clearVoices();
+	k = targetk;
+	for (auto i = 0; i < 128; ++i)
+		synth.addVoice(new RhodesWaveVoice(level, A3Frequency,c, k, x0, a1, a2));
+}
+
+
+void RhodesPluginSynthAudioProcessor::changex0(float targetx0)
+{
+	synth.clearVoices();
+	x0 = targetx0;
+	for (auto i = 0; i < 128; ++i)
+		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+}
+
+void RhodesPluginSynthAudioProcessor::changea1(float targeta1)
+{
+	synth.clearVoices();
+	a1 = targeta1;
+	for (auto i = 0; i < 128; ++i)
+		synth.addVoice(new RhodesWaveVoice(level,A3Frequency, c, k, x0, a1, a2));
+}
+
+void RhodesPluginSynthAudioProcessor::changea2(float targeta2)
+{
+	synth.clearVoices();
+	a2 = targeta2;
+	for (auto i = 0; i < 128; ++i)
+		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations

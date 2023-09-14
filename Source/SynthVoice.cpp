@@ -10,10 +10,10 @@
 #include "SynthVoice.h"
 #include "PluginEditor.h"
 
-double constexpr RhodesWaveVoice::A3Frequency;
-
-RhodesWaveVoice::RhodesWaveVoice() :
+RhodesWaveVoice::RhodesWaveVoice(double targetLevel,double targetA3Frequency, double targetc, double targetk, double targetx0, double targeta1, double targeta2)
+	:
 	juce::SynthesiserVoice(),
+	A3Frequency(440.0),
 	tailOff(0.0),
 	cx(0.0),
 	ss(0),
@@ -36,10 +36,17 @@ RhodesWaveVoice::RhodesWaveVoice() :
 	theta(0.0),
 	damp(1.0),
 	level(0.1),
+	currentLevel(0.1),
 	attack(0.0),
 	decay(0.0)
 {
-
+	currentLevel = targetLevel;
+	A3Frequency = targetA3Frequency;
+	c = targetc;
+	k = targetk;
+	x0 = targetx0;
+	a1 = targeta1;
+	a2 = targeta2;
 }
 
 bool RhodesWaveVoice::canPlaySound(juce::SynthesiserSound* sound)
@@ -119,7 +126,7 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 	{
 		static double constexpr V0 = 4000.0;
 		static double constexpr AMax = 0.0019 * V0 + 0.0008;
-		static double constexpr Amin = 0.0019 * V0 < 0.0047 ? -0.0019 * V0 + 0.0047: 0.0019 * V0 - 0.0047;
+		static double constexpr Amin = 0.0019 * V0 < 0.0047 ? -0.0019 * V0 + 0.0047 : 0.0019 * V0 - 0.0047;
 		double x = 0.0;
 		while (--numSamples >= 0)
 		{
