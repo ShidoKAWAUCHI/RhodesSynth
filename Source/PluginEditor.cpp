@@ -10,7 +10,8 @@
 #include "PluginEditor.h"
 
 RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(RhodesPluginSynthAudioProcessor& p)
-    : AudioProcessorEditor(&p), processor(p),
+    : AudioProcessorEditor(&p),
+	processor(p),
 	keyboardComponent(p.getMidiKeyboardState(),
 	juce::MidiKeyboardComponent::horizontalKeyboard),
 	currentLevel(0.1),

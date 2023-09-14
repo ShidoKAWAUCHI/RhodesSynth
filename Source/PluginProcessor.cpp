@@ -23,6 +23,14 @@ RhodesPluginSynthAudioProcessor::RhodesPluginSynthAudioProcessor()
 #endif
     )
 #endif
+    ,
+    level(0.1),
+    A3Frequency(440.0),
+    c(0.000050),
+    k(20.0),
+    x0(3.0),
+    a1(10.0),
+    a2(0.01)
 {
     for (auto i = 0; i < 128; ++i)
         synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
@@ -114,7 +122,7 @@ void RhodesPluginSynthAudioProcessor::releaseResources()
     keyboardState.reset();
 }
 
-void RhodesPluginSynthAudioProcessor::changeLevel(float targetLevel)
+void RhodesPluginSynthAudioProcessor::changeLevel(double targetLevel)
 {
 	synth.clearVoices();
 
@@ -132,7 +140,7 @@ void RhodesPluginSynthAudioProcessor::changeA3Frequency(double targetA3Frequency
         synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
 }
 
-void RhodesPluginSynthAudioProcessor::changec(float targetc)
+void RhodesPluginSynthAudioProcessor::changec(double targetc)
 {
 	synth.clearVoices();
 	c = targetc;
@@ -140,7 +148,7 @@ void RhodesPluginSynthAudioProcessor::changec(float targetc)
 		synth.addVoice(new RhodesWaveVoice(level,A3Frequency,c, k, x0, a1, a2));
 }
 
-void RhodesPluginSynthAudioProcessor::changek(float targetk)
+void RhodesPluginSynthAudioProcessor::changek(double targetk)
 {
 	synth.clearVoices();
 	k = targetk;
@@ -149,7 +157,7 @@ void RhodesPluginSynthAudioProcessor::changek(float targetk)
 }
 
 
-void RhodesPluginSynthAudioProcessor::changex0(float targetx0)
+void RhodesPluginSynthAudioProcessor::changex0(double targetx0)
 {
 	synth.clearVoices();
 	x0 = targetx0;
@@ -157,7 +165,7 @@ void RhodesPluginSynthAudioProcessor::changex0(float targetx0)
 		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
 }
 
-void RhodesPluginSynthAudioProcessor::changea1(float targeta1)
+void RhodesPluginSynthAudioProcessor::changea1(double targeta1)
 {
 	synth.clearVoices();
 	a1 = targeta1;
@@ -165,7 +173,7 @@ void RhodesPluginSynthAudioProcessor::changea1(float targeta1)
 		synth.addVoice(new RhodesWaveVoice(level,A3Frequency, c, k, x0, a1, a2));
 }
 
-void RhodesPluginSynthAudioProcessor::changea2(float targeta2)
+void RhodesPluginSynthAudioProcessor::changea2(double targeta2)
 {
 	synth.clearVoices();
 	a2 = targeta2;

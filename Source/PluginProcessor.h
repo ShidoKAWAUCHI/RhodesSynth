@@ -42,13 +42,13 @@ public:
     void changeProgramName(int index, const juce::String& newName) override;
     void getStateInformation(juce::MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
-    void changeLevel(float targetLevel);
+    void changeLevel(double targetLevel);
     void changeA3Frequency(double targetA3Frequency);
-    void changec(float targetc);
-    void changek(float targetk);
-    void changex0(float targetx0);
-    void changea1(float targeta1);
-    void changea2(float targeta2);
+    void changec(double targetc);
+    void changek(double targetk);
+    void changex0(double targetx0);
+    void changea1(double targeta1);
+    void changea2(double targeta2);
    
 
     juce::MidiKeyboardState& getMidiKeyboardState() { return keyboardState; }
@@ -57,13 +57,13 @@ private:
     juce::Synthesiser synth;
     juce::MidiKeyboardState keyboardState;
     juce::MidiMessageCollector midiCollector;
-    double  level = 0.1;
-    double A3Frequency = 440.0;
-    double c = 0.000050;
-    double k = 20.0;
-    double x0 = 3.0;
-    double a1 = 10.0;
-    double a2 = 0.01;
+    double  level;
+    double A3Frequency;
+    double c;
+    double k;
+    double x0;
+    double a1;
+    double a2;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RhodesPluginSynthAudioProcessor)
 };
