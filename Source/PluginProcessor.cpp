@@ -1,7 +1,7 @@
 /*
   ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin processor.
+	This file contains the basic framework code for a JUCE plugin processor.
 
   ==============================================================================
 */
@@ -14,27 +14,27 @@
 RhodesPluginSynthAudioProcessor::RhodesPluginSynthAudioProcessor()
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-    : AudioProcessor(BusesProperties()
+	: AudioProcessor(BusesProperties()
 #if ! JucePlugin_IsMidiEffect
 #if ! JucePlugin_IsSynth
-        .withInput("Input", juce::AudioChannelSet::stereo(), true)
+		.withInput("Input", juce::AudioChannelSet::stereo(), true)
 #endif
-        .withOutput("Output", juce::AudioChannelSet::stereo(), true)
+		.withOutput("Output", juce::AudioChannelSet::stereo(), true)
 #endif
-    )
+	)
 #endif
-    ,
-    level(0.1),
-    A3Frequency(440.0),
-    c(0.000050),
-    k(20.0),
-    x0(3.0),
-    a1(10.0),
-    a2(0.01)
+	,
+	level(0.1),
+	A3Frequency(440.0),
+	c(0.000050),
+	k(20.0),
+	x0(3.0),
+	a1(10.0),
+	a2(0.01)
 {
-    for (auto i = 0; i < 128; ++i)
-        synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
-      synth.addSound(new RhodesWaveSound());
+	for (auto i = 0; i < 128; ++i)
+		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+	synth.addSound(new RhodesWaveSound());
 }
 
 RhodesPluginSynthAudioProcessor::~RhodesPluginSynthAudioProcessor()
@@ -43,49 +43,49 @@ RhodesPluginSynthAudioProcessor::~RhodesPluginSynthAudioProcessor()
 
 const juce::String RhodesPluginSynthAudioProcessor::getName() const
 {
-    return JucePlugin_Name;
+	return JucePlugin_Name;
 }
 
 bool RhodesPluginSynthAudioProcessor::acceptsMidi() const
 {
 #if JucePlugin_WantsMidiInput
-    return true;
+	return true;
 #else
-    return false;
+	return false;
 #endif
 }
 
 bool RhodesPluginSynthAudioProcessor::producesMidi() const
 {
 #if JucePlugin_ProducesMidiOutput
-    return true;
+	return true;
 #else
-    return false;
+	return false;
 #endif
 }
 
 bool RhodesPluginSynthAudioProcessor::isMidiEffect() const
 {
 #if JucePlugin_IsMidiEffect
-    return true;
+	return true;
 #else
-    return false;
+	return false;
 #endif
 }
 
 double RhodesPluginSynthAudioProcessor::getTailLengthSeconds() const
 {
-    return 0.0;
+	return 0.0;
 }
 
 int RhodesPluginSynthAudioProcessor::getNumPrograms()
 {
-    return 1;                
+	return 1;
 }
 
 int RhodesPluginSynthAudioProcessor::getCurrentProgram()
 {
-    return 0;
+	return 0;
 }
 
 void RhodesPluginSynthAudioProcessor::setCurrentProgram(int index)
@@ -94,7 +94,7 @@ void RhodesPluginSynthAudioProcessor::setCurrentProgram(int index)
 
 const juce::String RhodesPluginSynthAudioProcessor::getProgramName(int index)
 {
-    return {};
+	return {};
 }
 
 void RhodesPluginSynthAudioProcessor::changeProgramName(int index, const juce::String& newName)
@@ -103,128 +103,120 @@ void RhodesPluginSynthAudioProcessor::changeProgramName(int index, const juce::S
 
 void RhodesPluginSynthAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
-    synth.setCurrentPlaybackSampleRate(sampleRate);
-    keyboardState.reset();
+	synth.setCurrentPlaybackSampleRate(sampleRate);
+	keyboardState.reset();
 }
 
 void RhodesPluginSynthAudioProcessor::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {
-    bufferToFill.clearActiveBufferRegion();
-    juce::MidiBuffer incomingMidi;
-    midiCollector.removeNextBlockOfMessages(incomingMidi, bufferToFill.numSamples);
-    keyboardState.processNextMidiBuffer(incomingMidi, bufferToFill.startSample, bufferToFill.numSamples, true);
-    synth.renderNextBlock(*bufferToFill.buffer, incomingMidi, bufferToFill.startSample, bufferToFill.numSamples);
+	bufferToFill.clearActiveBufferRegion();
+	juce::MidiBuffer incomingMidi;
+	midiCollector.removeNextBlockOfMessages(incomingMidi, bufferToFill.numSamples);
+	keyboardState.processNextMidiBuffer(incomingMidi, bufferToFill.startSample, bufferToFill.numSamples, true);
+	synth.renderNextBlock(*bufferToFill.buffer, incomingMidi, bufferToFill.startSample, bufferToFill.numSamples);
 }
 
 void RhodesPluginSynthAudioProcessor::releaseResources()
 {
-    keyboardState.allNotesOff(0);
-    keyboardState.reset();
+	keyboardState.allNotesOff(0);
+	keyboardState.reset();
 }
 
 void RhodesPluginSynthAudioProcessor::changeLevel(double targetLevel)
 {
-	synth.clearVoices();
-
 	level = targetLevel;
 
-	for (auto i = 0; i < 128; ++i)
-		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+	for (int i = 0; i < synth.getNumVoices(); ++i)
+		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->setLevel(level);
 }
 
 void RhodesPluginSynthAudioProcessor::changeA3Frequency(double targetA3Frequency)
 {
-    synth.clearVoices();
-    A3Frequency = targetA3Frequency;
-    for (auto i = 0; i < 128; ++i)
-        synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+	A3Frequency = targetA3Frequency;
+	for (int i = 0; i < synth.getNumVoices(); ++i)
+		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->setA3frequency(A3Frequency);
 }
 
 void RhodesPluginSynthAudioProcessor::changec(double targetc)
 {
-	synth.clearVoices();
 	c = targetc;
-	for (auto i = 0; i < 128; ++i)
-		synth.addVoice(new RhodesWaveVoice(level,A3Frequency,c, k, x0, a1, a2));
+	for (int i = 0; i < synth.getNumVoices(); ++i)
+		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->setc(c);
 }
 
 void RhodesPluginSynthAudioProcessor::changek(double targetk)
 {
-	synth.clearVoices();
 	k = targetk;
-	for (auto i = 0; i < 128; ++i)
-		synth.addVoice(new RhodesWaveVoice(level, A3Frequency,c, k, x0, a1, a2));
+	for (int i = 0; i < synth.getNumVoices(); ++i)
+		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->setk(k);
 }
 
 
 void RhodesPluginSynthAudioProcessor::changex0(double targetx0)
 {
-	synth.clearVoices();
 	x0 = targetx0;
-	for (auto i = 0; i < 128; ++i)
-		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+	for (int i = 0; i < synth.getNumVoices(); ++i)
+		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->setx0(x0);
 }
 
 void RhodesPluginSynthAudioProcessor::changea1(double targeta1)
 {
-	synth.clearVoices();
 	a1 = targeta1;
-	for (auto i = 0; i < 128; ++i)
-		synth.addVoice(new RhodesWaveVoice(level,A3Frequency, c, k, x0, a1, a2));
+	for (int i = 0; i < synth.getNumVoices(); ++i)
+		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->seta1(a1);
 }
 
 void RhodesPluginSynthAudioProcessor::changea2(double targeta2)
 {
-	synth.clearVoices();
 	a2 = targeta2;
-	for (auto i = 0; i < 128; ++i)
-		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+	for (int i = 0; i < synth.getNumVoices(); ++i)
+		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->seta2(a2);
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool RhodesPluginSynthAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
 #if JucePlugin_IsMidiEffect
-    juce::ignoreUnused(layouts);
-    return true;
+	juce::ignoreUnused(layouts);
+	return true;
 #else
 
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
-        return false;
+	if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
+		&& layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+		return false;
 
 #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
+	if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
+		return false;
 #endif
 
-    return true;
+	return true;
 #endif
 }
 #endif
 
 void RhodesPluginSynthAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
-    juce::ScopedNoDenormals noDenormals;
-    int totalNumInputChannels = getTotalNumInputChannels();
-    int totalNumOutputChannels = getTotalNumOutputChannels();
+	juce::ScopedNoDenormals noDenormals;
+	int totalNumInputChannels = getTotalNumInputChannels();
+	int totalNumOutputChannels = getTotalNumOutputChannels();
 
-    keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear(i, 0, buffer.getNumSamples());
+	keyboardState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(), true);
+	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+		buffer.clear(i, 0, buffer.getNumSamples());
 
-    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+	synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 
 }
 
 bool RhodesPluginSynthAudioProcessor::hasEditor() const
 {
-    return true; 
+	return true;
 }
 
 juce::AudioProcessorEditor* RhodesPluginSynthAudioProcessor::createEditor()
 {
-    return new RhodesPluginSynthAudioProcessorEditor(*this);
+	return new RhodesPluginSynthAudioProcessorEditor(*this);
 }
 
 void RhodesPluginSynthAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
@@ -237,5 +229,5 @@ void RhodesPluginSynthAudioProcessor::setStateInformation(const void* data, int 
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new RhodesPluginSynthAudioProcessor();
+	return new RhodesPluginSynthAudioProcessor();
 }

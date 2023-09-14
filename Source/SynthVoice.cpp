@@ -13,20 +13,20 @@
 RhodesWaveVoice::RhodesWaveVoice(double targetLevel,double targetA3Frequency, double targetc, double targetk, double targetx0, double targeta1, double targeta2)
 	:
 	juce::SynthesiserVoice(),
-	A3Frequency(440.0),
+	A3Frequency(targetA3Frequency),
 	tailOff(0.0),
 	cx(0.0),
 	ss(0),
 	freq(0.0),
 	base_freq(0.0),
 	period_sec(0.0),
-	c(0.000050),
-	k(20.0),
+	c(targetc),
+	k(targetk),
 	f1(8.0),
 	f2(4186.0),
-	a1(10.0),
-	a2(0.01),
-	x0(3.0),
+	a1(targeta1),
+	a2(targeta2),
+	x0(targetx0),
 	A1(-6.49268 * pow(10, -2)),
 	A2(-4.15615 * pow(10, -2)),
 	A3(1.65023 * pow(10, -2)),
@@ -35,18 +35,10 @@ RhodesWaveVoice::RhodesWaveVoice(double targetLevel,double targetA3Frequency, do
 	A6(0.0),
 	theta(0.0),
 	damp(1.0),
-	level(0.1),
-	currentLevel(0.1),
+	level(targetLevel),
 	attack(0.0),
 	decay(0.0)
 {
-	currentLevel = targetLevel;
-	A3Frequency = targetA3Frequency;
-	c = targetc;
-	k = targetk;
-	x0 = targetx0;
-	a1 = targeta1;
-	a2 = targeta2;
 }
 
 bool RhodesWaveVoice::canPlaySound(juce::SynthesiserSound* sound)
@@ -86,15 +78,14 @@ void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
 
 void RhodesWaveVoice::pitchWheelMoved(int newPitchWheelValue)
 {
-	double wheelPos = ((float)newPitchWheelValue - 8192.0f) / 8192.0f;
+	double wheelPos = (static_cast<double>(newPitchWheelValue) - 8192.0) / 8192.0;
 	pitchShiftPos(wheelPos);
 }
 
-void RhodesWaveVoice::controllerMoved(int, int) {}
 
 void RhodesWaveVoice::aftertouchChanged(int newAftertouchValue)
 {
-	float aftertoutchPos = static_cast<float>(newAftertouchValue) / 127.0f;
+	double aftertoutchPos = static_cast<double>(newAftertouchValue) / 127.0;
 	pitchShiftPos(aftertoutchPos);
 }
 

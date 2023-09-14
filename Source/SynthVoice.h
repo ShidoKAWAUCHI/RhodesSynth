@@ -22,10 +22,17 @@ public:
         juce::SynthesiserSound*, int /*currentPitchWheelPosition*/) override;
     void stopNote(float /*velocity*/, bool allowTailOff) override;
     void pitchWheelMoved(int newPitchWheelValue) override;
-    void controllerMoved(int, int) override;
+    void controllerMoved(int, int) override {}
     void aftertouchChanged(int newAftertouchValue) override;
     void renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override;
     void setCurrentPlaybackSampleRate(double 	newRate) override;
+    void setLevel(double level);
+    void setA3frequency(double A3Frequency);
+    void setc(double c);
+    void setk(double k);
+    void setx0(double x0);
+    void seta1(double a1);
+    void seta2(double a2);
 
 private:
 
@@ -56,7 +63,7 @@ private:
     double theta;
     double damp;
 
-    double level,currentLevel;
+    double level;
     double attack;
     double decay;
 
@@ -64,3 +71,38 @@ private:
     void pitchShiftPos(double pos);
     void clearNote();
 };
+
+inline void RhodesWaveVoice::setLevel(double l)
+{
+    level = l;
+}
+
+inline void RhodesWaveVoice::setA3frequency(double A)
+{
+    A3Frequency = A;
+}
+
+inline void RhodesWaveVoice::setc(double C)
+{
+    c = C;
+}
+
+inline void RhodesWaveVoice::setk(double K)
+{
+    k = K;
+}
+
+inline void RhodesWaveVoice::setx0(double x)
+{
+    x0 = x;
+}
+
+inline void RhodesWaveVoice::seta1(double A1)
+{
+    a1 = A1;
+}
+
+inline void RhodesWaveVoice::seta2(double A2)
+{
+    a2 = A2;
+}
