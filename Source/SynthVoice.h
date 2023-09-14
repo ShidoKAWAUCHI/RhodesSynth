@@ -53,14 +53,13 @@ private:
     double A5;
     double A6;
 
-    
-
     double theta;
     double damp;
 
     double level;
+    double attack;
+    double decay;
 
     void pitchShiftPos(double pos);
     void clearNote();
-    double renderNextSample();
 };
