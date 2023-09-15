@@ -47,7 +47,6 @@ private:
     double period_sec_;
     double c_;
     double k_;
-    double alpha_;
     double wheelPos_;
     double aftertoutchPos_;
 
@@ -107,8 +106,7 @@ inline void RhodesWaveVoice::setx0(double x)
 
 inline void RhodesWaveVoice::seta1(double A1)
 {
-    //a1_ = A1;
-    alpha_ = A1;
+    a1_ = A1;
 }
 
 inline void RhodesWaveVoice::seta2(double A2)

@@ -26,7 +26,7 @@ RhodesWaveVoice::RhodesWaveVoice(double targetlevel, double targetA3Frequency, d
 	k_(targetk),
 	f1_(8.0),
 	f2_(4186.0),
-	a1_(10.0),
+	a1_(targeta1),
 	a2_(targeta2),
 	x0_(targetx0),
 	A1_(-6.49268 * pow(10, -2)),
@@ -40,7 +40,6 @@ RhodesWaveVoice::RhodesWaveVoice(double targetlevel, double targetA3Frequency, d
 	level_(targetlevel),
 	attack_(0.0),
 	decay_(0.0),
-	alpha_(targeta1),
 	wheelPos_(0.0),
 	aftertoutchPos_(0.0)
 {
@@ -125,13 +124,13 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 		static double constexpr V0 = 4000.0;
 		static double constexpr AMax = 0.0019 * V0 + 0.0008;
 		static double constexpr Amin = 0.0019 * V0 < 0.0047 ? -0.0019 * V0 + 0.0047 : 0.0019 * V0 - 0.0047;
-		static double constexpr a1 = 0.5;
+		static double constexpr alpha = 0.999;
 		double x = 0.0;
 		while (--numSamples >= 0)
 		{
 	
-			freq_ = (1-alpha_)*targetFreq_+(alpha_*targetFreq_);
-			targetFreq_ = freq_;
+			freq_ = (1-alpha)*targetFreq_+(alpha*freq_);
+			
 
 			theta_ += 2.0 * juce::MathConstants<double>::pi * freq_ * period_sec_; //theta = 2 * 3.14159265358979323846 * freq * time; 
 			damp_ *= expl((-0.6 * period_sec_));
