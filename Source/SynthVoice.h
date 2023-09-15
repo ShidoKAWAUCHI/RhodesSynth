@@ -48,6 +48,9 @@ private:
     double c_;
     double k_;
     double alpha_;
+    double wheelPos_;
+    double aftertoutchPos_;
+
 
     double f1_;
     double f2_;
@@ -83,7 +86,7 @@ inline void RhodesWaveVoice::setLevel(double level)
 
 inline void RhodesWaveVoice::setA3frequency(double A)
 {
-    freq_ *= A / a3f_;
+    targetFreq_ *= A / a3f_;
     a3f_ = A;
 }
 

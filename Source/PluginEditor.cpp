@@ -45,7 +45,8 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
 	addAndMakeVisible(levelLabel);
 
 	addAndMakeVisible(A3FrequencySlider);
-	A3FrequencySlider.setRange(428.0, 458.0,1);
+	//A3FrequencySlider.setRange(428.0, 458.0,1);
+	A3FrequencySlider.setRange(428.0, 880.0, 1);
 	A3FrequencySlider.setValue(currentA3Frequency, juce::dontSendNotification);
 	A3FrequencySlider.setSkewFactorFromMidPoint(440.0);
 	A3FrequencySlider.onValueChange = [this] {

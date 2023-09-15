@@ -40,7 +40,9 @@ RhodesWaveVoice::RhodesWaveVoice(double targetlevel, double targetA3Frequency, d
 	level_(targetlevel),
 	attack_(0.0),
 	decay_(0.0),
-	alpha_(targeta1)
+	alpha_(targeta1),
+	wheelPos_(0.0),
+	aftertoutchPos_(0.0)
 {
 }
 
@@ -55,7 +57,6 @@ void RhodesWaveVoice::startNote(int midiNoteNumber, float velocity,
 	level_ = velocity * 0.1;
 	tailOff_ = 1.0;
 
-	//auto cyclePerSecond = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber, a3f_);
 	auto cyclePerSecond = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber, A3Frequency_);
 	auto cyclePerSample = cyclePerSecond / getSampleRate();
 
@@ -84,15 +85,15 @@ void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
 
 void RhodesWaveVoice::pitchWheelMoved(int newPitchWheelValue)
 {
-	double wheelPos = (static_cast<double>(newPitchWheelValue) - 8192.0) / 8192.0;
-	pitchShiftPos(wheelPos);
+	wheelPos_ = (static_cast<double>(newPitchWheelValue) - 8192.0) / 8192.0;
+	pitchShiftPos(wheelPos_+aftertoutchPos_);
 }
 
 
 void RhodesWaveVoice::aftertouchChanged(int newAftertouchValue)
 {
-	//double aftertoutchPos = static_cast<double>(newAftertouchValue) / 127.0;
-	//pitchShiftPos(aftertoutchPos);
+	aftertoutchPos_ = static_cast<double>(newAftertouchValue) / 127.0;
+	pitchShiftPos(aftertoutchPos_+wheelPos_);
 }
 
 void RhodesWaveVoice::pitchShiftPos(double pos)
