@@ -32,6 +32,16 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
     addAndMakeVisible(keyboardComponent);
 
 	addAndMakeVisible(levelSlider);
+	levelSlider.setRange(-100, -12);
+	targetLevel = currentLevel;
+	processor.changeLevel(targetLevel);
+	levelSlider.onValueChange = [this] {
+		targetLevel = juce::Decibels::decibelsToGain((double)levelSlider.getValue());
+		processor.changeLevel(targetLevel);
+	};
+	levelSlider.setValue(juce::Decibels::gainToDecibels(targetLevel), juce::dontSendNotification);
+	
+	/*
 	levelSlider.setRange(0.0, 0.125);
 	levelSlider.setValue((double)currentLevel, juce::dontSendNotification);
 	targetLevel = currentLevel;
@@ -40,8 +50,9 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
 		targetLevel = (float)levelSlider.getValue();
 		processor.changeLevel(targetLevel);
 	};
+	*/
 
-	levelLabel.setText("level:", juce::dontSendNotification);
+	levelLabel.setText("dB:", juce::dontSendNotification);
 	addAndMakeVisible(levelLabel);
 
 	addAndMakeVisible(A3FrequencySlider);

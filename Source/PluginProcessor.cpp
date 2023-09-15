@@ -24,7 +24,7 @@ RhodesPluginSynthAudioProcessor::RhodesPluginSynthAudioProcessor()
 	)
 #endif
 	,
-	level(0.1),
+	level(0.0),
 	A3Frequency(440.0),
 	c(0.000050),
 	k(20.0),

@@ -131,7 +131,6 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 	
 			freq_ = (1-alpha)*targetFreq_+(alpha*freq_);
 			
-
 			theta_ += 2.0 * juce::MathConstants<double>::pi * freq_ * period_sec_; //theta = 2 * 3.14159265358979323846 * freq * time; 
 			damp_ *= expl((-0.6 * period_sec_));
 
@@ -189,8 +188,8 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 			double a[] = { a1_,a2_ };
 			double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2.0))) * (pow((freq_ - f[1]), 2.0)) + a[1];
 
-			//value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) * A * level_;
-			value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) * A *0.05;
+			value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) * A * level_;
+			//value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) * A *0.05;
 			ss_ += 1.0;
 
 			auto currentSample = value * tailOff_;
