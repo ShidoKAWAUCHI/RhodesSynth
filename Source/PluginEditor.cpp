@@ -49,8 +49,8 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
 	levelSlider.onValueChange = [this] {
 		targetLevel = (float)levelSlider.getValue();
 		processor.changeLevel(targetLevel);
-	};
-	*/
+	};*/
+	
 
 	levelLabel.setText("dB:", juce::dontSendNotification);
 	addAndMakeVisible(levelLabel);

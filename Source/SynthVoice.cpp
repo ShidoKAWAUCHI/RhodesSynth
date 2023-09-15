@@ -37,7 +37,8 @@ RhodesWaveVoice::RhodesWaveVoice(double targetlevel, double targetA3Frequency, d
 	A6_(0.0),
 	theta_(0.0),
 	damp_(1.0),
-	level_(targetlevel),
+	level_(0.1),
+	currentLevel_(targetlevel),
 	attack_(0.0),
 	decay_(0.0),
 	wheelPos_(0.0),
@@ -53,7 +54,7 @@ bool RhodesWaveVoice::canPlaySound(juce::SynthesiserSound* sound)
 void RhodesWaveVoice::startNote(int midiNoteNumber, float velocity,
 	juce::SynthesiserSound*, int /*currentPitchWheelPosition*/)
 {
-	level_ = velocity * 0.1;
+	level_ = velocity * currentLevel_;
 	tailOff_ = 1.0;
 
 	auto cyclePerSecond = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber, A3Frequency_);

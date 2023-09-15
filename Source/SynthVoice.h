@@ -69,6 +69,7 @@ private:
     double damp_;
 
     double level_;
+    double currentLevel_;
     double attack_;
     double decay_;
 
@@ -80,7 +81,7 @@ private:
 
 inline void RhodesWaveVoice::setLevel(double level)
 {
-    level_ = level;
+    currentLevel_ = level;
 }
 
 inline void RhodesWaveVoice::setA3frequency(double A)
