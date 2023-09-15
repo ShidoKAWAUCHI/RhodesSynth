@@ -28,15 +28,13 @@ private:
     double currentc, targetc;
     double currentk, targetk;
     double currentx0, targetx0;
-    double currenta1, targeta1;
-    double currenta2, targeta2;
 
     juce::MidiKeyboardComponent keyboardComponent;
 
     RhodesPluginSynthAudioProcessor& processor;
     juce::Synthesiser synth;
-    juce::Slider levelSlider, A3FrequencySlider, cSlider, kSlider, x0Slider,a1Slider,a2Slider;
-    juce::Label levelLabel, A3FrequencyLabel, cLabel, kLabel, x0Label,a1Label,a2Label;
+    juce::Slider levelSlider, A3FrequencySlider, cSlider, kSlider, x0Slider;
+    juce::Label levelLabel, A3FrequencyLabel, cLabel, kLabel, x0Label;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(RhodesPluginSynthAudioProcessorEditor)
 };

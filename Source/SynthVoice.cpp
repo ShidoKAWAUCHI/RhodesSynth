@@ -10,7 +10,7 @@
 #include "SynthVoice.h"
 #include "PluginEditor.h"
 
-RhodesWaveVoice::RhodesWaveVoice(double targetlevel, double targetA3Frequency, double targetc, double targetk, double targetx0, double targeta1, double targeta2)
+RhodesWaveVoice::RhodesWaveVoice(double targetlevel, double targetA3Frequency, double targetc, double targetk, double targetx0)
 	:
 	juce::SynthesiserVoice(),
 	a3f_(targetA3Frequency),
@@ -24,10 +24,6 @@ RhodesWaveVoice::RhodesWaveVoice(double targetlevel, double targetA3Frequency, d
 	period_sec_(0.0),
 	c_(targetc),
 	k_(targetk),
-	f1_(8.0),
-	f2_(4186.0),
-	a1_(targeta1),
-	a2_(targeta2),
 	x0_(targetx0),
 	A1_(-6.49268 * pow(10, -2)),
 	A2_(-4.15615 * pow(10, -2)),
@@ -37,7 +33,7 @@ RhodesWaveVoice::RhodesWaveVoice(double targetlevel, double targetA3Frequency, d
 	A6_(0.0),
 	theta_(0.0),
 	damp_(1.0),
-	level_(0.1),
+	velocity_(0.1),
 	currentLevel_(targetlevel),
 	attack_(0.0),
 	decay_(0.0),
@@ -54,7 +50,7 @@ bool RhodesWaveVoice::canPlaySound(juce::SynthesiserSound* sound)
 void RhodesWaveVoice::startNote(int midiNoteNumber, float velocity,
 	juce::SynthesiserSound*, int /*currentPitchWheelPosition*/)
 {
-	level_ = velocity * currentLevel_;
+	velocity_ = velocity;
 	tailOff_ = 1.0;
 
 	auto cyclePerSecond = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber, A3Frequency_);
@@ -67,7 +63,6 @@ void RhodesWaveVoice::startNote(int midiNoteNumber, float velocity,
 	damp_ = 1.0;
 	attack_ = getSampleRate() / (base_freq_ * 4.0);
 	decay_ = 3.0 * getSampleRate() / (base_freq_ * 4.0);
-
 }
 
 void RhodesWaveVoice::stopNote(float /*velocity*/, bool allowTailOff)
@@ -181,19 +176,13 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 
 			cx_ = x;
 
-			/*value = (-1 * (sign * (A6 * pow(x, 6) + A5 * (abs(pow(x, 5))) + A4 * pow(x, 4)
-				+ A3 * (abs(pow(x, 3))) + A2 * pow(x, 2) + A1 * (abs(x)))) * v);
-				value = (-2 * (x / k) * c * exp(-(x * x / k))) * v;*/
+			//value = (-1 * (sign * (A6_ * pow(x, 6) + A5_ * (abs(pow(x, 5))) + A4_ * pow(x, 4)
+				//+ A3_ * (abs(pow(x, 3))) + A2_ * pow(x, 2) + A1_ * (abs(x)))) * v);
 
-			double f[] = { f1_, f2_ };
-			double a[] = { a1_,a2_ };
-			double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2.0))) * (pow((freq_ - f[1]), 2.0)) + a[1];
-
-			value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) * A * level_;
-			//value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) * A *0.05;
+			value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) ;
 			ss_ += 1.0;
 
-			auto currentSample = value * tailOff_;
+			auto currentSample = value * tailOff_ * currentLevel_*velocity_;
 
 			for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
 				outputBuffer.addSample(i, startSample, currentSample);

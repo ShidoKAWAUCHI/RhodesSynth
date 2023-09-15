@@ -47,9 +47,6 @@ public:
     void changec(double targetc);
     void changek(double targetk);
     void changex0(double targetx0);
-    void changea1(double targeta1);
-    void changea2(double targeta2);
-   
 
     juce::MidiKeyboardState& getMidiKeyboardState() { return keyboardState; }
 
@@ -62,8 +59,6 @@ private:
     double c;
     double k;
     double x0;
-    double a1;
-    double a2;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RhodesPluginSynthAudioProcessor)
 };

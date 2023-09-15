@@ -14,7 +14,7 @@
 class RhodesWaveVoice : public juce::SynthesiserVoice
 {
 public:
-    RhodesWaveVoice(double targetLevel,double targetA3Freqency, double targetc, double targetk, double targetx0, double targeta1, double targeta2) ;
+    RhodesWaveVoice(double targetLevel,double targetA3Freqency, double targetc, double targetk, double targetx0) ;
     ~RhodesWaveVoice() override {}
 
     bool canPlaySound(juce::SynthesiserSound* sound) override;
@@ -31,11 +31,8 @@ public:
     void setc(double c);
     void setk(double k);
     void setx0(double x0);
-    void seta1(double a1);
-    void seta2(double a2);
 
 private:
-
     double a3f_;
     double A3Frequency_;
     double tailOff_;
@@ -50,13 +47,6 @@ private:
     double wheelPos_;
     double aftertoutchPos_;
 
-
-    double f1_;
-    double f2_;
-
-    double a1_;
-    double a2_;
-
     double x0_;  //initial position
     double A1_;
     double A2_;
@@ -68,7 +58,8 @@ private:
     double theta_;
     double damp_;
 
-    double level_;
+    double velocity_;
+    
     double currentLevel_;
     double attack_;
     double decay_;
@@ -103,14 +94,4 @@ inline void RhodesWaveVoice::setk(double K)
 inline void RhodesWaveVoice::setx0(double x)
 {
     x0_ = x;
-}
-
-inline void RhodesWaveVoice::seta1(double A1)
-{
-    a1_ = A1;
-}
-
-inline void RhodesWaveVoice::seta2(double A2)
-{
-    a2_ = A2;
 }

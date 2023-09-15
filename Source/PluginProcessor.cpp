@@ -28,12 +28,10 @@ RhodesPluginSynthAudioProcessor::RhodesPluginSynthAudioProcessor()
 	A3Frequency(440.0),
 	c(0.000050),
 	k(20.0),
-	x0(3.0),
-	a1(10.0),
-	a2(0.01)
+	x0(3.0)
 {
 	for (auto i = 0; i < 128; ++i)
-		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0, a1, a2));
+		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0));
 	synth.addSound(new RhodesWaveSound());
 }
 
@@ -157,20 +155,6 @@ void RhodesPluginSynthAudioProcessor::changex0(double targetx0)
 	x0 = targetx0;
 	for (int i = 0; i < synth.getNumVoices(); ++i)
 		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->setx0(x0);
-}
-
-void RhodesPluginSynthAudioProcessor::changea1(double targeta1)
-{
-	a1 = targeta1;
-	for (int i = 0; i < synth.getNumVoices(); ++i)
-		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->seta1(a1);
-}
-
-void RhodesPluginSynthAudioProcessor::changea2(double targeta2)
-{
-	a2 = targeta2;
-	for (int i = 0; i < synth.getNumVoices(); ++i)
-		static_cast<RhodesWaveVoice*> (synth.getVoice(i))->seta2(a2);
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
