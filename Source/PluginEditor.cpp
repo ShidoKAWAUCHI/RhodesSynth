@@ -32,7 +32,7 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
     addAndMakeVisible(keyboardComponent);
 
 	addAndMakeVisible(levelSlider);
-	levelSlider.setRange(0.0, 0.125f);
+	levelSlider.setRange(0.0, 0.125);
 	levelSlider.setValue((double)currentLevel, juce::dontSendNotification);
 	targetLevel = currentLevel;
 	processor.changeLevel(targetLevel);
@@ -45,7 +45,7 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
 	addAndMakeVisible(levelLabel);
 
 	addAndMakeVisible(A3FrequencySlider);
-	A3FrequencySlider.setRange(220.0, 880.0);
+	A3FrequencySlider.setRange(428.0, 458.0,1);
 	A3FrequencySlider.setValue(currentA3Frequency, juce::dontSendNotification);
 	A3FrequencySlider.setSkewFactorFromMidPoint(440.0);
 	A3FrequencySlider.onValueChange = [this] {
@@ -91,7 +91,8 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
 	addAndMakeVisible(x0Label);
 
 	addAndMakeVisible(a1Slider);
-	a1Slider.setRange(1.0, 100.0);
+	//a1Slider.setRange(1.0, 100.0);
+	a1Slider.setRange(0, 0.99);
 	a1Slider.setValue(currenta1, juce::dontSendNotification);
 	a1Slider.onValueChange = [this] {
 		targeta1 = a1Slider.getValue();
@@ -115,7 +116,7 @@ RhodesPluginSynthAudioProcessorEditor::RhodesPluginSynthAudioProcessorEditor(Rho
 
     setSize(600, 450);
 }
-
+	
 
 void RhodesPluginSynthAudioProcessorEditor::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill)
 {

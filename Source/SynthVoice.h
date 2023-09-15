@@ -27,7 +27,7 @@ public:
     void renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int startSample, int numSamples) override;
     void setCurrentPlaybackSampleRate(double 	newRate) override;
     void setLevel(double level);
-    void setA3frequency(double A3Frequency);
+    void setA3frequency(double a3f);
     void setc(double c);
     void setk(double k);
     void setx0(double x0);
@@ -36,73 +36,79 @@ public:
 
 private:
 
-    double A3Frequency;
-    double tailOff;
-    double cx;
-    double ss;
-    double freq;
-    double base_freq;
-    double period_sec;
-    double c;
-    double k;
+    double a3f_;
+    double A3Frequency_;
+    double tailOff_;
+    double cx_;
+    double ss_;
+    double freq_;
+    double base_freq_;
+    double targetFreq_;
+    double period_sec_;
+    double c_;
+    double k_;
+    double alpha_;
 
-    double f1;
-    double f2;
+    double f1_;
+    double f2_;
 
-    double a1;
-    double a2;
+    double a1_;
+    double a2_;
 
-    double x0;  //initial position
-    double A1;
-    double A2;
-    double A3;
-    double A4; 
-    double A5;
-    double A6;
+    double x0_;  //initial position
+    double A1_;
+    double A2_;
+    double A3_;
+    double A4_; 
+    double A5_;
+    double A6_;
 
-    double theta;
-    double damp;
+    double theta_;
+    double damp_;
 
-    double level;
-    double attack;
-    double decay;
+    double level_;
+    double attack_;
+    double decay_;
 
 
     void pitchShiftPos(double pos);
+    void pitchShiftA3();
     void clearNote();
 };
 
-inline void RhodesWaveVoice::setLevel(double l)
+inline void RhodesWaveVoice::setLevel(double level)
 {
-    level = l;
+    level_ = level;
 }
 
 inline void RhodesWaveVoice::setA3frequency(double A)
 {
-    A3Frequency = A;
+    freq_ *= A / a3f_;
+    a3f_ = A;
 }
 
 inline void RhodesWaveVoice::setc(double C)
 {
-    c = C;
+    c_ = C;
 }
 
 inline void RhodesWaveVoice::setk(double K)
 {
-    k = K;
+    k_ = K;
 }
 
 inline void RhodesWaveVoice::setx0(double x)
 {
-    x0 = x;
+    x0_ = x;
 }
 
 inline void RhodesWaveVoice::seta1(double A1)
 {
-    a1 = A1;
+    //a1_ = A1;
+    alpha_ = A1;
 }
 
 inline void RhodesWaveVoice::seta2(double A2)
 {
-    a2 = A2;
+    a2_ = A2;
 }
