@@ -28,8 +28,55 @@ RhodesPluginSynthAudioProcessor::RhodesPluginSynthAudioProcessor()
 	A3Frequency(440.0),
 	c(0.000050),
 	k(20.0),
-	x0(3.0)
+	x0(3.0),
+	parameters(*this, nullptr, juce::Identifier("APVTSTutorial"),
+		{
+			std::make_unique<juce::AudioParameterFloat>("dB:",  // ID
+														"DB:",  // name
+														juce::NormalisableRange<float>(-60.0f,0.0f),
+														 -20.0f,
+														 "feedback",
+														  juce::AudioProcessorParameter::genericParameter,
+														  [](float value, int) {return juce::String(value, 2) ; }
+														),// default
+			std::make_unique<juce::AudioParameterFloat>("a3:",  // ID
+														"A3:",  // name
+														juce::NormalisableRange<float>(428.0f,458.0f),
+														 440.0f,
+														 "feedback",
+														  juce::AudioProcessorParameter::genericParameter,
+														  [](float value, int) {return juce::String(value, 0); }),// default
+			std::make_unique<juce::AudioParameterFloat>("c:",  // ID
+														"C:",  // name
+														juce::NormalisableRange<float>(0.00001f, 0.001f),
+														 0.00005f,
+														 "feedback",
+														  juce::AudioProcessorParameter::genericParameter,
+														  [](float value, int) {return juce::String(value, 5); }
+														 ),// default
+			std::make_unique<juce::AudioParameterFloat>("k:",  // ID
+														"K:",  // name
+														juce::NormalisableRange<float>(0.0f, 100.0f),
+														 20.0f,
+														 "feedback",
+														  juce::AudioProcessorParameter::genericParameter,
+														  [](float value, int) {return juce::String(value, 2); }
+														),// default
+			std::make_unique<juce::AudioParameterFloat>("x0:",  // ID
+														"X0:",  // name
+														juce::NormalisableRange<float>(-10.0f, 10.0f),
+														 3.0f,
+														 "feedback",
+														  juce::AudioProcessorParameter::genericParameter,
+														  [](float value, int) {return juce::String(value, 1); }
+				)// default
+		})
 {
+	dBParam = parameters.getRawParameterValue("dB:");
+	A3Param = parameters.getRawParameterValue("a3:");
+	cParam = parameters.getRawParameterValue("c:");
+	kParam = parameters.getRawParameterValue("k:");
+	x0Param = parameters.getRawParameterValue("x0:");
 	for (auto i = 0; i < 128; ++i)
 		synth.addVoice(new RhodesWaveVoice(level, A3Frequency, c, k, x0));
 	synth.addSound(new RhodesWaveSound());
@@ -200,7 +247,7 @@ bool RhodesPluginSynthAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* RhodesPluginSynthAudioProcessor::createEditor()
 {
-	return new RhodesPluginSynthAudioProcessorEditor(*this);
+	return new RhodesPluginSynthAudioProcessorEditor(*this, parameters);
 }
 
 void RhodesPluginSynthAudioProcessor::getStateInformation(juce::MemoryBlock& destData)

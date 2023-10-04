@@ -182,7 +182,8 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 			value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) ;
 			ss_ += 1.0;
 
-			auto currentSample = value * tailOff_ * currentLevel_*velocity_;
+			auto currentSample = value * tailOff_ * currentLevel_ * 0.5;
+				//*velocity_;
 
 			for (auto i = outputBuffer.getNumChannels(); --i >= 0;)
 				outputBuffer.addSample(i, startSample, currentSample);
