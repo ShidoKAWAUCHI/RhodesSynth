@@ -179,7 +179,15 @@ void RhodesWaveVoice::renderNextBlock(juce::AudioSampleBuffer& outputBuffer, int
 			//value = (-1 * (sign * (A6_ * pow(x, 6) + A5_ * (abs(pow(x, 5))) + A4_ * pow(x, 4)
 				//+ A3_ * (abs(pow(x, 3))) + A2_ * pow(x, 2) + A1_ * (abs(x)))) * v);
 
-			value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v) ;
+			//Œã‚ÅÁ‚·
+			/*double f[] = {32.0, 3500.0};
+			double a[] = { 0.0000018,0};
+			double A = ((a[0] - a[1]) / (pow((f[0] - f[1]), 2.0))) * (pow((freq_ - f[1]), 4)) + a[1];*/
+			//Œã‚ÅÁ‚·
+
+			double A = (20 * exp(0.01*(32.0 - freq_)))+1 ;
+
+			value = ((-2.0 * (x / k_) * c_ * exp(-((x * x) / k_))) * v)*A ;
 			ss_ += 1.0;
 
 			auto currentSample = value * tailOff_ * currentLevel_ * 0.5;

@@ -55,12 +55,6 @@ private:
     juce::MidiKeyboardState keyboardState;
     juce::MidiMessageCollector midiCollector;
 
-    juce::AudioProcessorValueTreeState parameters;
-    std::atomic<float>* dBParam = nullptr;
-    std::atomic<float>* A3Param = nullptr;
-    std::atomic<float>* cParam = nullptr;
-    std::atomic<float>* kParam = nullptr;
-    std::atomic<float>* x0Param = nullptr;
 
     double  level;
     double A3Frequency;
